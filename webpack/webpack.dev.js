@@ -32,6 +32,7 @@ console.log(config.env, entry);
 module.exports = {
   entry: entry,
   output: {
+    path: path.resolve(__dirname, "../build/"),
     filename: "[name].js",
     publicPath: config.webpack.publicPath,
   },
@@ -42,7 +43,7 @@ module.exports = {
     aggregateTimeout: 300,
     poll: 1000
   },
-
+  
   module: {
     rules: [
       {
