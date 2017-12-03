@@ -1,12 +1,10 @@
 var gulp = require("gulp");
-// var gulpUtil = require("gulp-util");
-
 var webpack = require("webpack");
 var webpackDevServer = require("webpack-dev-server");
 var gulpWebpack = require("webpack-stream");
 var nodemon = require("gulp-nodemon");
 var minimist = require("minimist");
-// var del = require("del");
+var shell = require("gulp-shell");
 
 // 加载配置
 var appConfig = require("./config/app.config");
@@ -14,9 +12,10 @@ var webpackDevConfig = require("./webpack/webpack.dev");
 
 // 默认参数
 var defaultOptions = {
-  string: "env",
+  string: ["env"],
   default: {
-    env: process.env.NODE_ENV || "production"
+    env: process.env.NODE_ENV || "production",
+    hotstart: "true", // 默认node-server热启动
   }
 };
 
@@ -27,11 +26,16 @@ var options = minimist(process.argv.slice(2), defaultOptions);
  * 开发环境
  */
 gulp.task("dev", [
-  "dev_webpack_server",
-  "node_hot_server"
+  "dev_server",
+  options.hotstart ? "node_hot_server" : "node_server",
 ]);
 
-gulp.task("pre", function() {
+gulp.task("pre", [
+  "pre_build",
+  options.hotstart ? "node_hot_server" : "node_server",
+]);
+
+gulp.task("publish", ["prd_build"], function() {
 
 });
 
@@ -48,31 +52,34 @@ gulp.task("default", function() {
 /**
  * dev环境的webpack编译打包
  */
-gulp.task("dev_webpack", function(cb) {
+gulp.task("dev_webpack", function() {
   return gulpWebpack(webpackDevConfig, webpack);
 });
 
 /**
- * dev环境的webpack-dev-server
+ * 开发环境的webpack-dev-server
  */
-gulp.task("dev_webpack_server", function() {
-  return new webpackDevServer(webpack(webpackDevConfig), {
-    contentBase: "./",
-    publicPath: webpackDevConfig.output.publicPath,
-    hot: true,
-    host: appConfig.ip,
-    lazy: false,
-    inline: true,
-    progress: true,
-    port: webpackDevConfig.devServer.port,
-    stats: {
-      colors: true,
-      debug: true,
-      inline: true
-    }
-  })
-  .listen(webpackDevConfig.devServer.port, appConfig.ip);
-});
+gulp.task("dev_server", shell.task("cnpm run dev-server"));
+
+/**
+ * 开发环境的编译
+ */
+gulp.task("dev_build", shell.task("cnpm run dev-build"));
+
+/**
+ * 预发环境的编译
+ */
+gulp.task("pre_build", shell.task("cnpm run pre-build"));
+
+/**
+ * 正式环境的编译
+ */
+gulp.task("prd_build", shell.task("cnpm run prd-build"));
+
+/**
+ * node server
+ */
+gulp.task("node_server", shell.task("NODE_ENV=" + options.env + " cnpm run start"));
 
 /**
  * nodemon node server

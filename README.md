@@ -2,13 +2,14 @@
 
 ## 项目说明
 
-本项目利用Koa2+Webpack+React+Mysql进行项目开发和部署，旨在学习+实践+创新。
+> 本项目利用Koa2+Webpack+React+Mysql进行项目开发和部署，旨在学习+实践+创新。
+> 项目中用到了gulp作为任务管理。
 
 本项目后期改进点：
 
 - Node和前端结合，MVC实践
+- 中间件配置管理
 - 加入ssr服务端渲染
-- 利用gulp或grunt进行任务管理
 - 优化项目初始化操作，配套脚手架
 
 ## 项目使用
@@ -17,13 +18,13 @@
 
 ```shell
 # 初始化项目
+npm install -g cnpm --registry=https://registry.npm.taobao.org
 git clone [gitRepo]
 cd koa2-demo
-npm i
+cnpm i
 
 # 本地开发
-npm run hot-start
-npm run dev-build
+cnpm run dev
 ```
 **其他脚本用法详见package.json script**
 
